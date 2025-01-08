@@ -5,6 +5,7 @@ import axios from '../../../../../../api/axios'
 import { Banner, Button, Chip, Dialog, List, Portal, RadioButton, TextInput } from 'react-native-paper'
 import { Ionicons } from '@expo/vector-icons'
 import { useAuthContext } from '../../../../../../contexts/AuthContext'
+import Btn from '../../../../../../components/Button'
 
 const reasons = ['I changed my mind', 'Request made by mistake', 'Others']
 
@@ -304,23 +305,17 @@ const MyCredentialId = () => {
         </ScrollView>
         {request.request_status === 'review' && (
           <View className="bg-white p-2">
-            <Button onPress={handleOpen} mode='outlined' textColor='red' contentStyle={{ height: 50 }} className="rounded-xl">
-              <Text className="text-sm font-pmedium">Cancel Request</Text>
-            </Button>
+            <Btn label="Cancel Request" onPress={handleOpen} mode='outlined' textColor='red' />
           </View>
         )}
         {(request.request_status === 'receive' && request.request_credential.request_credential_status === null) && (
           <View className="bg-white p-2">
-            <Button onPress={handleRequestClaim} mode='outlined' contentStyle={{ height: 50 }} className="rounded-xl" disabled={btnLoading} loading={btnLoading}>
-              <Text className="text-sm font-pmedium">Request Claim</Text>
-            </Button>
+            <Btn label="Request Claim" onPress={handleRequestClaim} mode='outlined' disabled={btnLoading} loading={btnLoading} />
           </View>
         )}
         {request.request_status === 'cancel' && (
           <View className="bg-white p-2">
-            <Button onPress={handleRequestAgain} mode='outlined' contentStyle={{ height: 50 }} className="rounded-xl" disabled={isDisabled || btnLoading} loading={btnLoading}>
-              <Text className="text-sm font-pmedium">Request Again</Text>
-            </Button>
+            <Btn label="Request Again" onPress={handleRequestAgain} mode='outlined' disabled={isDisabled || btnLoading} loading={btnLoading} />
           </View>
         )}
       </View>
