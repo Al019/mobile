@@ -10,7 +10,7 @@ import * as ImageManipulator from 'expo-image-manipulator'
 
 const { width } = Dimensions.get('window')
 
-const url = "http://192.168.0.101:8000/"
+const url = "http://192.168.12.197:8000/"
 
 const MyDocumentId = () => {
   const { id } = useLocalSearchParams()

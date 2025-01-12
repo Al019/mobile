@@ -2,7 +2,7 @@ import { router, useLocalSearchParams } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { Alert, RefreshControl, ScrollView, Text, View } from 'react-native'
 import axios from '../../../../../../api/axios'
-import { Banner, Button, Chip, Dialog, List, Portal, RadioButton, TextInput } from 'react-native-paper'
+import { ActivityIndicator, Banner, Button, Chip, Dialog, List, Portal, RadioButton, TextInput } from 'react-native-paper'
 import { Ionicons } from '@expo/vector-icons'
 import { useAuthContext } from '../../../../../../contexts/AuthContext'
 import Btn from '../../../../../../components/Button'
@@ -176,147 +176,159 @@ const MyCredentialId = () => {
     <>
       <View className="flex-1">
         <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />} contentContainerStyle={{ flexGrow: 1, backgroundColor: "#DBEAFE80", padding: 8 }}>
-          {
-            (((request.request_status === 'review' && request.request_credential?.credential.on_page === 1) ||
-              (request.request_status === 'pay' && !request.payment) ||
-              (request.request_status === 'pay' && request.payment) ||
-              request.request_credential?.request_credential_status === 'claim') && (
-                <Banner
-                  className={`bg-white rounded-xl shadow-none ${bannerVisible ? 'mb-2' : 'mb-0'}`}
-                  visible={bannerVisible}
-                  actions={[
-                    {
-                      label: <Text className="font-pregular text-sm">Close</Text>,
-                      onPress: () => setBannerVisible(false)
-                    }
-                  ]}
-                  icon={({ size }) => (
-                    <Ionicons name='alert-circle-outline' size={size} color="orange" />
-                  )}>
-                  <Text className="font-pregular text-sm">
-                    {(request.request_status === 'review' && request.request_credential?.credential.on_page === 1)
-                      ? 'Note: There will be changes in the partial amount on the review as the admin adds pages.'
-                      : (request.request_status === 'pay' && !request.payment)
-                        ? "If payment is not completed, you will not be able to request again."
-                        : (request.request_status === 'pay' && request.payment)
-                          ? 'Note: Please wait, your request is being processed.'
-                          : request.request_credential?.request_credential_status === 'claim'
-                            ? 'Note: Please wait, your request is being released.'
-                            : null}
-                  </Text>
-                </Banner>
-              ))
-          }
-          <View className="space-y-2">
-            <View>
-              <View className={`p-4 rounded-t-xl flex-row items-center justify-between ${request.request_status === 'review' && 'bg-yellow-500' || request.request_status === 'pay' && 'bg-orange-500' || request.request_status === 'process' && 'bg-cyan-500' || request.request_status === 'receive' && 'bg-indigo-500' || request.request_status === 'complete' && 'bg-green-500' || request.request_status === 'cancel' && 'bg-red-500'}`}>
-                <Text className="text-white font-pmedium text-sm">Request No.: {request.request_number}</Text>
-                <Text className="text-white font-pmedium text-sm capitalize">{request.request_status === 'review' && 'To Review' || request.request_status === 'pay' && 'To Pay' || request.request_status === 'process' && 'In Process' || request.request_status === 'receive' && 'To Receive' || request.request_status === 'complete' && 'Completed' || request.request_status === 'cancel' && 'Cancelled'}</Text>
-              </View>
-              <View className="bg-white p-4 space-y-2 rounded-b-xl">
-                <View className="flex-row items-center justify-between">
-                  <Text className="text-sm font-pregular">Date Requested:</Text>
-                  <Text className="text-sm font-pregular">{formatDate(request.created_at)}</Text>
+          {loading ? (
+            <View className="flex-1 items-center justify-center">
+              <ActivityIndicator animating={loading} />
+            </View>
+          ) : (
+            <>
+              {
+                (((request.request_status === 'review' && request.request_credential?.credential.on_page === 1) ||
+                  (request.request_status === 'pay' && !request.payment) ||
+                  (request.request_status === 'pay' && request.payment) ||
+                  request.request_credential?.request_credential_status === 'claim') && (
+                    <Banner
+                      className={`bg-white rounded-xl shadow-none ${bannerVisible ? 'mb-2' : 'mb-0'}`}
+                      visible={bannerVisible}
+                      actions={[
+                        {
+                          label: <Text className="font-pregular text-sm">Close</Text>,
+                          onPress: () => setBannerVisible(false)
+                        }
+                      ]}
+                      icon={({ size }) => (
+                        <Ionicons name='alert-circle-outline' size={size} color="orange" />
+                      )}>
+                      <Text className="font-pregular text-sm">
+                        {(request.request_status === 'review' && request.request_credential?.credential.on_page === 1)
+                          ? 'Note: There will be changes in the partial amount on the review as the admin adds pages.'
+                          : (request.request_status === 'pay' && !request.payment)
+                            ? "If payment is not completed, you will not be able to request again."
+                            : (request.request_status === 'pay' && request.payment)
+                              ? 'Note: Please wait, your request is being processed.'
+                              : request.request_credential?.request_credential_status === 'claim'
+                                ? 'Note: Please wait, your request is being released.'
+                                : null}
+                      </Text>
+                    </Banner>
+                  ))
+              }
+              <View className="space-y-2">
+                <View>
+                  <View className={`p-4 rounded-t-xl flex-row items-center justify-between ${request.request_status === 'review' && 'bg-yellow-500' || request.request_status === 'pay' && 'bg-orange-500' || request.request_status === 'process' && 'bg-cyan-500' || request.request_status === 'receive' && 'bg-indigo-500' || request.request_status === 'complete' && 'bg-green-500' || request.request_status === 'cancel' && 'bg-red-500'}`}>
+                    <Text className="text-white font-pmedium text-sm">Request No.: {request.request_number}</Text>
+                    <Text className="text-white font-pmedium text-sm capitalize">{request.request_status === 'review' && 'To Review' || request.request_status === 'pay' && 'To Pay' || request.request_status === 'process' && 'In Process' || request.request_status === 'receive' && 'To Receive' || request.request_status === 'complete' && 'Completed' || request.request_status === 'cancel' && 'Cancelled'}</Text>
+                  </View>
+                  <View className="bg-white p-4 space-y-2 rounded-b-xl">
+                    <View className="flex-row items-center justify-between">
+                      <Text className="text-sm font-pregular">Date Requested:</Text>
+                      <Text className="text-sm font-pregular">{formatDate(request.created_at)}</Text>
+                    </View>
+                    {request.request_status === 'cancel' && (
+                      <View className="flex-row items-center justify-between">
+                        <Text className="text-sm font-pregular">Date Cancelled:</Text>
+                        <Text className="text-sm font-pregular">{formatDate(request.updated_at)}</Text>
+                      </View>
+                    )}
+                    {request.request_status === 'complete' && (
+                      <View className="flex-row items-center justify-between">
+                        <Text className="text-sm font-pregular">Date Completed:</Text>
+                        <Text className="text-sm font-pregular">{formatDate(request.updated_at)}</Text>
+                      </View>
+                    )}
+                  </View>
+                </View>
+                {request.request_status === 'process' && (
+                  <View className="bg-white space-y-4 p-4 rounded-xl">
+                    <Text className="font-pmedium text-sm">Estimated Date to Claim</Text>
+                    <View className="flex-row items-center justify-between">
+                      <Text className="text-sm font-pregular">{formatDate(calculateEstimatedFinishDate(request.updated_at, parseInt(request.request_credential?.credential.working_day)))}</Text>
+                    </View>
+                  </View>
+                )}
+                <View className="bg-white rounded-xl pb-3">
+                  <View>
+                    <Text className="px-4 pt-4 pb-2 font-pmedium text-sm">Requested Credential</Text>
+                    <List.Item
+                      title={() => <Text className="text-sm font-pregular">{request.request_credential?.credential.credential_name}</Text>}
+                      description={() => <Text className="text-sm font-pregular">{`₱ ${request.request_credential?.price}`}</Text>}
+                      right={props => <Text {...props} className="text-sm font-pregular">Page/s: {request.request_credential?.page}</Text>}
+                      titleStyle={{ fontSize: 14 }}
+                      className="py-0"
+                    >
+                    </List.Item>
+                  </View>
+                  <View>
+                    <Text className="px-4 pt-4 pb-2 font-pmedium text-sm">Selected Purpose/s</Text>
+                    {request.request_credential?.credential_purpose.map((credPurpose, index) => (
+                      <List.Item
+                        key={index}
+                        title={() => <Text className="text-sm font-pregular">{credPurpose.purpose.purpose_name}</Text>}
+                        description={() => <Text className="text-sm font-pregular">{`Copy/s: ${credPurpose.copy}`}</Text>}
+                        left={props => <Text {...props} className="text-sm font-pregular">{index + 1}</Text>}
+                        titleStyle={{ fontSize: 14 }}
+                        className="py-0"
+                      >
+                      </List.Item>
+                    ))}
+                  </View>
+                </View>
+                <View className="bg-white space-y-4 p-4 rounded-xl">
+                  <View className="flex-row items-center justify-between">
+                    <Text className="font-pmedium text-sm">Payment</Text>
+                    {request.payment && (
+                      <Chip className="bg-green-500/20" textStyle={{ color: "#14532d" }}>
+                        <Text className="text-sm font-pmedium">Paid</Text>
+                      </Chip>
+                    )}
+                  </View>
+                  {request.payment && (
+                    <View className="flex-row items-center justify-between">
+                      <Text className="text-sm font-pregular">Date and Time:</Text>
+                      <Text className="text-sm font-pregular">{formatDateTime(request.payment.created_at)}</Text>
+                    </View>
+                  )}
+                  {request.payment && (
+                    <View className="flex-row items-center justify-between">
+                      <Text className="text-sm font-pregular">OR Number:</Text>
+                      <Text className="text-sm font-pregular">{request.payment.or_number}</Text>
+                    </View>
+                  )}
+                  <View className="flex-row items-center justify-between">
+                    <Text className="text-sm font-pregular">
+                      {(request.request_status !== 'review' && request.request_status !== 'cancel') ? 'Total Amount:' : request.request_credential?.credential.on_page === 'yes' ? 'Partial Amount:' : 'Total Amount'}
+                    </Text>
+                    <Text className="text-sm font-pregular">₱ {calculateAmount()?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
+                  </View>
                 </View>
                 {request.request_status === 'cancel' && (
-                  <View className="flex-row items-center justify-between">
-                    <Text className="text-sm font-pregular">Date Cancelled:</Text>
-                    <Text className="text-sm font-pregular">{formatDate(request.updated_at)}</Text>
-                  </View>
-                )}
-                {request.request_status === 'complete' && (
-                  <View className="flex-row items-center justify-between">
-                    <Text className="text-sm font-pregular">Date Completed:</Text>
-                    <Text className="text-sm font-pregular">{formatDate(request.updated_at)}</Text>
+                  <View className="bg-white space-y-4 p-4 rounded-xl">
+                    <Text className="font-pmedium text-sm">Reason</Text>
+                    <Text className="text-sm font-pregular">{request.request_message}</Text>
                   </View>
                 )}
               </View>
-            </View>
-            {request.request_status === 'process' && (
-              <View className="bg-white space-y-4 p-4 rounded-xl">
-                <Text className="font-pmedium text-sm">Estimated Date to Claim</Text>
-                <View className="flex-row items-center justify-between">
-                  <Text className="text-sm font-pregular">{formatDate(calculateEstimatedFinishDate(request.updated_at, parseInt(request.request_credential?.credential.working_day)))}</Text>
-                </View>
-              </View>
-            )}
-            <View className="bg-white rounded-xl pb-3">
-              <View>
-                <Text className="px-4 pt-4 pb-2 font-pmedium text-sm">Requested Credential</Text>
-                <List.Item
-                  title={() => <Text className="text-sm font-pregular">{request.request_credential?.credential.credential_name}</Text>}
-                  description={() => <Text className="text-sm font-pregular">{`₱ ${request.request_credential?.price}`}</Text>}
-                  right={props => <Text {...props} className="text-sm font-pregular">Page/s: {request.request_credential?.page}</Text>}
-                  titleStyle={{ fontSize: 14 }}
-                  className="py-0"
-                >
-                </List.Item>
-              </View>
-              <View>
-                <Text className="px-4 pt-4 pb-2 font-pmedium text-sm">Selected Purpose/s</Text>
-                {request.request_credential?.credential_purpose.map((credPurpose, index) => (
-                  <List.Item
-                    key={index}
-                    title={() => <Text className="text-sm font-pregular">{credPurpose.purpose.purpose_name}</Text>}
-                    description={() => <Text className="text-sm font-pregular">{`Copy/s: ${credPurpose.copy}`}</Text>}
-                    left={props => <Text {...props} className="text-sm font-pregular">{index + 1}</Text>}
-                    titleStyle={{ fontSize: 14 }}
-                    className="py-0"
-                  >
-                  </List.Item>
-                ))}
-              </View>
-            </View>
-            <View className="bg-white space-y-4 p-4 rounded-xl">
-              <View className="flex-row items-center justify-between">
-                <Text className="font-pmedium text-sm">Payment</Text>
-                {request.payment && (
-                  <Chip className="bg-green-500/20" textStyle={{ color: "#14532d" }}>
-                    <Text className="text-sm font-pmedium">Paid</Text>
-                  </Chip>
-                )}
-              </View>
-              {request.payment && (
-                <View className="flex-row items-center justify-between">
-                  <Text className="text-sm font-pregular">Date and Time:</Text>
-                  <Text className="text-sm font-pregular">{formatDateTime(request.payment.created_at)}</Text>
-                </View>
-              )}
-              {request.payment && (
-                <View className="flex-row items-center justify-between">
-                  <Text className="text-sm font-pregular">OR Number:</Text>
-                  <Text className="text-sm font-pregular">{request.payment.or_number}</Text>
-                </View>
-              )}
-              <View className="flex-row items-center justify-between">
-                <Text className="text-sm font-pregular">
-                  {(request.request_status !== 'review' && request.request_status !== 'cancel') ? 'Total Amount:' : request.request_credential?.credential.on_page === 'yes' ? 'Partial Amount:' : 'Total Amount'}
-                </Text>
-                <Text className="text-sm font-pregular">₱ {calculateAmount()?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
-              </View>
-            </View>
-            {request.request_status === 'cancel' && (
-              <View className="bg-white space-y-4 p-4 rounded-xl">
-                <Text className="font-pmedium text-sm">Reason</Text>
-                <Text className="text-sm font-pregular">{request.request_message}</Text>
-              </View>
-            )}
-          </View>
+            </>
+          )}
         </ScrollView>
-        {request.request_status === 'review' && (
-          <View className="bg-white p-2">
-            <Btn label="Cancel Request" onPress={handleOpen} mode='outlined' textColor='red' />
-          </View>
-        )}
-        {(request.request_status === 'receive' && request.request_credential.request_credential_status === null) && (
-          <View className="bg-white p-2">
-            <Btn label="Request Claim" onPress={handleRequestClaim} mode='outlined' disabled={btnLoading} loading={btnLoading} />
-          </View>
-        )}
-        {request.request_status === 'cancel' && (
-          <View className="bg-white p-2">
-            <Btn label="Request Again" onPress={handleRequestAgain} mode='outlined' disabled={isDisabled || btnLoading} loading={btnLoading} />
-          </View>
+        {!loading && (
+          <>
+            {request.request_status === 'review' && (
+              <View className="bg-white p-2">
+                <Btn label="Cancel Request" onPress={handleOpen} mode='outlined' textColor='red' />
+              </View>
+            )}
+            {(request.request_status === 'receive' && request.request_credential.reqcred_status === null) && (
+              <View className="bg-white p-2">
+                <Btn label="Request Claim" onPress={handleRequestClaim} mode='outlined' disabled={btnLoading} loading={btnLoading} />
+              </View>
+            )}
+            {request.request_status === 'cancel' && (
+              <View className="bg-white p-2">
+                <Btn label="Request Again" onPress={handleRequestAgain} mode='outlined' disabled={isDisabled || btnLoading} loading={btnLoading} />
+              </View>
+            )}
+          </>
         )}
       </View>
 
